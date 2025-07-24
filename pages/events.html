@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>RWCC 2025 - Events</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    :root {
+      --gsf-red: #e74c3c;
+      --gsf-green: #27ae60;
+      --gsf-orange: #f39c12;
+      --gsf-blue: #3498db;
+      --text-dark: #2c3e50;
+      --text-light: #7f8c8d;
+      --bg-light: #ecf0f1;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: var(--text-dark);
+      background-color: #fff;
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--gsf-blue), var(--gsf-green));
+      color: white;
+      padding: 2rem 1rem;
+      position: relative;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .nav-toggle {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: white;
+      border-radius: 5px;
+      padding: 5px 10px;
+    }
+
+    .nav-menu {
+      display: none;
+      flex-direction: column;
+      position: absolute;
+      top: 70px;
+      left: 20px;
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    .nav-menu a {
+      padding: 10px 15px;
+      color: var(--text-dark);
+      text-decoration: none;
+      transition: background 0.3s;
+    }
+
+    .nav-menu a:hover {
+      background: var(--gsf-blue);
+      color: white;
+    }
+
+    .show-menu {
+      display: flex;
+    }
+
+    header h1 {
+      font-size: 3rem;
+      text-align: center;
+    }
+
+    .subtitle {
+      text-align: center;
+      font-size: 1.1rem;
+      opacity: 0.9;
+    }
+
+    main {
+      padding: 3rem 0;
+      background-color: var(--bg-light);
+      min-height: calc(100vh - 200px);
+    }
+
+    .events-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .event-card {
+      background: white;
+      padding: 2rem 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+      text-align: center;
+    }
+
+    .event-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+
+    .event-card[data-color="red"]:hover {
+      background-color: var(--gsf-red);
+      border-color: var(--gsf-red);
+    }
+
+    .event-card[data-color="green"]:hover {
+      background-color: var(--gsf-green);
+      border-color: var(--gsf-green);
+    }
+
+    .event-card[data-color="orange"]:hover {
+      background-color: var(--gsf-orange);
+      border-color: var(--gsf-orange);
+    }
+
+    .event-card[data-color="blue"]:hover {
+      background-color: var(--gsf-blue);
+      border-color: var(--gsf-blue);
+    }
+
+    .event-card h3 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      transition: color 0.3s ease;
+    }
+
+    .event-card:hover h3 {
+      color: white;
+    }
+
+    .overlay {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.8);
+      backdrop-filter: blur(5px);
+    }
+
+    .overlay-content {
+      background-color: white;
+      margin: 2% auto;
+      padding: 0;
+      border-radius: 15px;
+      width: 90%;
+      max-width: 800px;
+      max-height: 95vh;
+      overflow-y: auto;
+      position: relative;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+
+    .close {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 2rem;
+      font-weight: bold;
+      cursor: pointer;
+      color: var(--text-dark);
+      background: rgba(255,255,255,0.9);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      transition: all 0.3s ease;
+      z-index: 10;
+    }
+
+    .close:hover {
+      background: rgba(231, 76, 60, 0.9);
+      color: white;
+      transform: scale(1.1);
+    }
+
+    .event-details {
+      padding: 3rem 2rem 2rem;
+    }
+
+    .event-details h2 {
+      font-size: 2.2rem;
+      margin-bottom: 1rem;
+    }
+
+    .event-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .meta-item {
+      background: var(--bg-light);
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.9rem;
+    }
+
+    .section {
+      margin-bottom: 1.5rem;
+    }
+
+    .section h3 {
+      font-size: 1.3rem;
+      margin-bottom: 0.5rem;
+      color: var(--gsf-blue);
+    }
+
+    .registration-link {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--gsf-blue), var(--gsf-green));
+      color: white;
+      padding: 0.8rem 2rem;
+      text-decoration: none;
+      border-radius: 25px;
+      margin-top: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .registration-link:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="index.html"><button class="nav-toggle">☰</button></a>
+    <nav class="nav-menu" id="navMenu">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="events.html">Events</a>
+      <a href="register.html">Register</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <div class="container">
+      <h1>RWCC 3.0</h1>
+      <p class="subtitle">Global Indian International School Competition</p>
+    </div>
+  </header>
+
+  <main>
+        <div class="container">
+            <div class="events-grid">
+                <!-- Event Cards -->
+                <div class="event-card" onclick="openOverlay('event1')" data-color="red">
+                    <h3>Li'l Mavericks</h3>
+                </div>
+
+                <div class="event-card" onclick="openOverlay('event2')" data-color="green">
+                    <h3>SMART Strokes for Young Folks</h3>
+                </div>
+
+                <div class="event-card" onclick="openOverlay('event3')" data-color="orange">
+                    <h3>Opus for NextGen Intelligence</h3>
+                </div>
+
+                <div class="event-card" onclick="openOverlay('event4')" data-color="blue">
+                    <h3>AdZapp: Ideas that Dare</h3>
+                </div>
+
+                <div class="event-card" onclick="openOverlay('event5')" data-color="red">
+                    <h3>From Vision to Venture: Entrepreneur Challenge</h3>
+                </div>
+
+                <div class="event-card" onclick="openOverlay('event6')" data-color="green">
+                    <h3>Educators' Perspective</h3>
+                </div>
+
+                <div class="event-card" onclick="openOverlay('event7')" data-color="orange">
+                    <h3>A Valuable Bond</h3>
+                </div>
+
+                <div class="event-card" onclick="openOverlay('event8')" data-color="blue">
+                    <h3>Wellness Wave</h3>
+                </div>
+
+                <div class="event-card" onclick="openOverlay('event9')" data-color="red">
+                    <h3>Transformation Turncoat</h3>
+                </div>
+
+                <div class="event-card" onclick="openOverlay('event10')" data-color="green">
+                    <h3>Student Conference</h3>
+                </div>
+
+                <div class="event-card" onclick="openOverlay('event11')" data-color="orange">
+                    <h3>Battle of the Bots</h3>
+                </div>
+
+                <div class="event-card" onclick="openOverlay('event12')" data-color="blue">
+                    <h3>Global Create-a-thon</h3>
+                </div>
+
+                <div class="event-card" onclick="openOverlay('event13')" data-color="red">
+                    <h3>Global MedCon</h3>
+                </div>
+
+                <div class="event-card" onclick="openOverlay('event14')" data-color="green">
+                    <h3>Global Law Summit</h3>
+                </div>
+
+                <div class="event-card" onclick="openOverlay('event15')" data-color="orange">
+                    <h3>Thought Leadership: A Dialogue</h3>
+                </div>
+            </div>
+        </div>
+    </main>
+
+  <div class="overlay" id="overlay">
+    <div class="overlay-content" id="overlay-content"></div>
+  </div>
+
+    <script>
+        const events = {
+            event1: {
+                title: "Li'l Mavericks",
+                category: "KG, LP, UP",
+                mode: "Pre-judged",
+                team: "Team of 2",
+                description: "Present a creative skit or puppet show aligned with the 3C theme.",
+                criteria: "Content – 30, Presentation – 30, Creativity – 40",
+                submission: "2-minute video with subtitles",
+                link: "https://forms.gle/2aQ7Yh7zj7pnEvHY6"
+            },
+            event2: {
+                title: "SMART Strokes for Young Folks",
+                category: "UP",
+                mode: "Pre-judged",
+                team: "Individual",
+                description: "Create a drawing/collage digitally or physically showcasing the 3Cs.",
+                criteria: "Creativity – 40, Relevance – 30, Presentation – 30",
+                submission: "Image file (.jpg/.png)",
+                link: "https://forms.gle/8BicziAimbJsZZXq5"
+            },
+            event3: {
+                title: "Opus for NextGen Intelligence",
+                category: "MS, SEC",
+                mode: "Pre-judged",
+                team: "Team of 3",
+                description: "Write and perform a song/rap relevant to the 3C theme.",
+                criteria: "Originality – 30, Lyrics – 30, Performance – 40",
+                submission: "Video file (.mp4)",
+                link: "https://forms.gle/a6w8Fg7HLT6UogHcA"
+            },
+            event4: {
+                title: "AdZapp: Ideas that Dare",
+                category: "MS, SEC",
+                mode: "Pre-judged",
+                team: "Team of 3",
+                description: "Design a creative advertisement relevant to the theme.",
+                criteria: "Originality – 30, Creativity – 20, Clarity – 20, Video Quality – 30",
+                submission: "2-minute video with narration and subtitles",
+                link: "https://forms.gle/9gdNE75ybkpScQWTA"
+            },
+            event5: {
+                title: "From Vision to Venture: Entrepreneur Challenge",
+                category: "SNR",
+                mode: "Pre-judged",
+                team: "Team of 3",
+                description: "Create a startup concept deck with slides and video pitch.",
+                criteria: "Innovation – 30, Feasibility – 30, Presentation – 40",
+                submission: "Slide deck (.ppt) + Video (.mp4)",
+                link: "https://forms.gle/ciocxi9kBbsWcRA97"
+            },
+            event6: {
+                title: "Educators' Perspective",
+                category: "TCH",
+                mode: "Pre-judged",
+                team: "Individual",
+                description: "Write a blog/article sharing your perspective on future-ready learning.",
+                criteria: "Clarity – 25, Relevance – 25, Language – 25, Originality – 25",
+                submission: "PDF or Word Doc",
+                link: "https://forms.gle/28XvUnxv9AZqdwdh9"
+            },
+            event7: {
+                title: "A Valuable Bond",
+                category: "PNT",
+                mode: "Pre-judged",
+                team: "Individual or Duo",
+                description: "A photo story capturing the parent-child relationship with reflection text.",
+                criteria: "Visuals – 30, Message – 30, Creativity – 40",
+                submission: "Image + Reflection (PDF)",
+                link: "https://forms.gle/PiVfKVEmrLLcLNfo7"
+            },
+            event8: {
+                title: "Wellness Wave",
+                category: "TCH, SNR, AL",
+                mode: "On-site",
+                team: "Individual",
+                description: "Deliver a 5-minute TED-style talk on wellness and mindfulness.",
+                criteria: "Content – 40, Delivery – 30, Relevance – 30",
+                submission: "On-site delivery: 3rd December",
+                link: "https://forms.gle/KZQqXzTPc5AEtN5p6"
+            },
+            event9: {
+                title: "Transformation Turncoat",
+                category: "SNR",
+                mode: "On-site",
+                team: "Team of 2",
+                description: "Debate format where speakers switch sides mid-round.",
+                criteria: "Argument – 30, Rebuttal – 20, Adaptability – 30, Delivery – 20",
+                submission: "On-site: 3rd December",
+                link: "https://forms.gle/truiwXt7XCwQBPow7"
+            },
+            event10: {
+                title: "Student Conference",
+                category: "SEC, SNR",
+                mode: "On-site",
+                team: "Team of 2",
+                description: "Present a collaborative research paper and take audience Q&A.",
+                criteria: "Research Depth – 30, Clarity – 30, Team Coordination – 40",
+                submission: "On-site: 2nd December",
+                link: "https://forms.gle/TSdYUVGC8bGMMc9NA"
+            },
+            event11: {
+                title: "Battle of the Bots",
+                category: "MS, SEC, SNR",
+                mode: "On-site",
+                team: "Team of 2",
+                description: "Compete with your own-built robots in tasks testing automation and logic.",
+                criteria: "Engineering – 30, Functionality – 30, Creativity – 40",
+                submission: "On-site: 2nd & 3rd December",
+                link: "#"
+            },
+            event12: {
+                title: "Global Create-a-thon",
+                category: "MS, SEC",
+                mode: "On-site",
+                team: "Team of 2",
+                description: "Ideate and pitch solutions to real-world challenges in 24 hours.",
+                criteria: "Innovation – 40, Relevance – 30, Presentation – 30",
+                submission: "On-site: 3rd December",
+                link: "#"
+            },
+            event13: {
+                title: "Global MedCon",
+                category: "SNR, AL",
+                mode: "On-site",
+                team: "Team of 2",
+                description: "Simulated healthcare conference addressing current global medical challenges.",
+                criteria: "Medical Insight – 30, Teamwork – 30, Presentation – 40",
+                submission: "On-site: 3rd December",
+                link: "#"
+            },
+            event14: {
+                title: "Global Law Summit",
+                category: "SNR",
+                mode: "On-site",
+                team: "Individual",
+                description: "Mock courtroom debate on international law.",
+                criteria: "Legal Knowledge – 40, Argument – 30, Presentation – 30",
+                submission: "On-site: 4th December",
+                link: "#"
+            },
+            event15: {
+                title: "Thought Leadership: A Dialogue",
+                category: "AL",
+                mode: "On-site",
+                team: "Individual",
+                description: "An address on future of education, tech, or sustainability.",
+                criteria: "Thought Depth – 40, Clarity – 30, Impact – 30",
+                submission: "On-site: 3rd December",
+                link: "https://forms.gle/8DW1YQgmvFYUioEm7"
+            }
+        };
+
+        function openOverlay(eventId) {
+            const event = events[eventId];
+            const overlay = document.getElementById('overlay');
+            const overlayContent = document.getElementById('overlay-content');
+            
+            const registrationButton = event.link !== '#' ? 
+                `<a href="${event.link}" class="registration-link" target="_blank">Register Now</a>` : 
+                '<p style="color: #7f8c8d; font-style: italic;">Registration details will be announced soon</p>';
+            
+            overlayContent.innerHTML = `
+                <button class="close" onclick="closeOverlay()">&times;</button>
+                <div class="event-details">
+                    <h2>${event.title}</h2>
+                    <div class="event-meta">
+                        <span class="meta-item">${event.category}</span>
+                        <span class="meta-item">${event.team}</span>
+                        <span class="meta-item">${event.mode}</span>
+                    </div>
+                    <div class="section">
+                        <h3>Description</h3>
+                        <p>${event.description}</p>
+                    </div>
+                    <div class="section">
+                        <h3>Judging Criteria</h3>
+                        <p>${event.criteria}</p>
+                    </div>
+                    <div class="section">
+                        <h3>Submission Format</h3>
+                        <p>${event.submission}</p>
+                    </div>
+                    ${registrationButton}
+                </div>
+            `;
+            
+            overlay.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeOverlay() {
+            document.getElementById('overlay').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close overlay when clicking outside the content
+        document.getElementById('overlay').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeOverlay();
+            }
+        });
+
+        // Close overlay with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeOverlay();
+            }
+        });
+    </script>
+</body>
+</html>
